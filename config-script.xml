@@ -1,0 +1,76 @@
+<?xml version='1.1' encoding='UTF-8'?>
+<flow-definition plugin="workflow-job@1316.vd2290d3341a_f">
+  <actions>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobAction plugin="pipeline-model-definition@2.2144.v077a_d1928a_40"/>
+    <org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction plugin="pipeline-model-definition@2.2144.v077a_d1928a_40">
+      <jobProperties/>
+      <triggers/>
+      <parameters/>
+      <options/>
+    </org.jenkinsci.plugins.pipeline.modeldefinition.actions.DeclarativeJobPropertyTrackerAction>
+  </actions>
+  <description>Run pipeline by scripts on Jenkins</description>
+  <keepDependencies>false</keepDependencies>
+  <properties/>
+  <definition class="org.jenkinsci.plugins.workflow.cps.CpsFlowDefinition" plugin="workflow-cps@3717.va_180a_fe9d3cd">
+    <script>pipeline {
+    agent any
+    
+    environment {
+        // Defina o caminho do diretório de instalação do JDK que você deseja usar
+        JAVA_HOME = &apos;/var/jenkins_home/java/jdk-17&apos;
+        DOCKER_IMAGE_NAME = &quot;petclinic-pipeline&quot;
+        DOCKER_IMAGE_TAG = &quot;latest&quot;
+        M2_HOME = &quot;/var/jenkins_home/maven/apache-maven-3.9.3&quot;
+    }
+
+    stages {
+        stage(&apos;Clone Repository&apos;) {
+            steps {
+                git branch:&apos;main&apos;, url: &apos;https://github.com/spring-projects/spring-petclinic&apos;
+            }
+        }
+        stage(&apos;Build&apos;) {
+            steps {
+                sh &apos;java --version&apos;
+                // Comandos para compilar o código ou construir a imagem Docker, por exemplo:
+                sh &apos;${M2_HOME}/bin/mvn clean package -DskipTests&apos;
+                script {
+                    JAR_FILE_NAME = sh(returnStdout: true, script: &quot;ls target/*.jar&quot;).trim()
+                }
+            }
+        }
+        stage(&apos;Test&apos;) {
+            steps {
+                // Comandos para executar testes automatizados
+                sh &apos;${M2_HOME}/bin/mvn package test&apos;
+            }
+        }
+        stage(&apos;Docker Image Build&apos;) {
+            steps {
+                // Crie a imagem Docker utilizando o Dockerfile do seu projeto
+                script {
+                    dir(&apos;tmp_git_repo&apos;) {
+                        // Clone do repositório com o modo shallow para economizar tempo e recursos
+                        git branch: &apos;main&apos;, url: &apos;https://github.com/mkj2399/pet_pipe.git&apos;, shallow: true
+                        // Ativar o recurso sparse-checkout
+                        sh &apos;git config core.sparseCheckout true&apos;
+                        // Criar o arquivo .git/info/sparse-checkout contendo o caminho do arquivo específico que você deseja clonar
+                        sh &apos;echo &quot;Dockerfile-petclinic&quot; &gt;&gt; .git/info/sparse-checkout&apos;
+                        // Fazer o checkout novamente para aplicar o sparse-checkout
+                        sh &apos;git read-tree -mu HEAD&apos;
+                    }
+                    sh &apos;cp tmp_git_repo/Dockerfile-petclinic Dockerfile&apos;
+                    //sh &apos;./mvnw spring-boot:build-image&apos;
+                    dockerImage = docker.build(&quot;${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}&quot;, &quot;--build-arg=JAR_FILE=${JAR_FILE_NAME} .&quot;)
+                }
+            }
+        }
+    }
+}
+</script>
+    <sandbox>true</sandbox>
+  </definition>
+  <triggers/>
+  <disabled>false</disabled>
+</flow-definition>
