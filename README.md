@@ -1,7 +1,7 @@
 # Pipeline Exercise
 
 ## Project Approach:
-The objective of this project is to offer a pre-configured Jenkins Docker container with a ready-to-use pipeline for building the Git repository, creating a Docker image, and deploying it within the same Docker environment where Jenkins is running.
+The objective of this project is to offer a pre-configured Jenkins Docker container with a ready-to-use pipeline for building the pet clinic , and creating a Docker image, and deploying it within the same Docker environment where Jenkins is running.
 
 ## Test Environment (two options):
 The test environment used for this project included the following components:
