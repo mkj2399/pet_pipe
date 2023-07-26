@@ -5,6 +5,5 @@ services:
     ports:
       - "9090:8080"
     environment:
-      JAVA_OPTS: >
-        -Dspring.profiles.active=mysql
+      - JAVA_OPTS=-Dspring.profiles.active=mysql\
         -Dspring.datasource.url=jdbc:mysql://mysql/petclinic
