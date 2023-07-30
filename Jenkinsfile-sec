@@ -126,16 +126,25 @@ pipeline {
                 }
             }
         }
-        stage('Push Docker image to Artifactory') {
-            steps {
-                 script {
-                            def rtDocker = Artifactory.docker server: server
-                            def buildInfo = Artifactory.newBuildInfo()
-                            rtDocker.push('my-spring-petclinic-sec:latest', 'docker_repo', buildInfo)
-                            server.publishBuildInfo buildInfo
-                 }
-            }
-        }
+       stage('Publish Build Info to Artifactory') {
+                   steps {
+                       script {
+                           // Prepare Artifactory server and build info objects
+                           def server = Artifactory.server 'myartifactory2'
+                           def buildInfo = Artifactory.newBuildInfo()
+
+                           // Define the Docker image and repository (same as in the Build stage)
+                           def dockerImage = 'my-spring-petclinic-sec:latest'
+                           def dockerRepository = 'docker_repo'
+                           dockerImage = "${artifactoryUrl}/${dockerRepository}/${dockerImage}"
+
+                           // Publish build info and Docker image to Artifactory
+                           def rtDocker = Artifactory.docker server: server
+                           rtDocker.push(dockerImage, dockerRepository, buildInfo)
+                           server.publishBuildInfo buildInfo
+                       }
+                   }
+               }
 
         stage('Container Scanning') {
             steps {
