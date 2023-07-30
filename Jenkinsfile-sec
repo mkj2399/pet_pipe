@@ -8,16 +8,11 @@ pipeline {
         DOCKER_IMAGE_TAG = "latest"
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
         JAR_FILE_NAME = ''
+        def server = Artifactory.server 'myartifactory2'
     }
 
     stages {
-        stage('Artifactory configuration') {
-                    steps {
-                        script {
-                            def server = Artifactory.server 'myartifactory2'
-                        }
-                    }
-        }
+
         stage('Clone Repository') {
             steps {
                 git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
