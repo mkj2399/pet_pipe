@@ -4,44 +4,43 @@ pipeline {
     environment {
         // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
-        M2_HOME = '/var/jenkins_home/maven/apache-maven-3.9.3'
+        DOCKER_IMAGE_NAME = "petclinic-pipeline-file-sec"
+        DOCKER_IMAGE_TAG = "latest"
+        M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
+        JAR_FILE_NAME = ''
         def server = Artifactory.server 'myartifactory2'
-        def DOCKER_IMAGE_NAME = 'my-spring-petclinic-sec'
-        def DOCKER_IMAGE_TAG = 'latest'
-        def JAR_FILE_NAME = ''
-        def dockerImage = ''
-        def dockerRepository = 'docker_repo'
-        def artifactoryUrl = 'https://192.168.1.147:8082/artifactory' // Replace with your Artifactory URL
 
     }
 
     stages {
-        stage('Test Artifactory Connection') {
-            steps {
-                script {
+        stage('Teste Artifactory') {
+            steps
+            {
+                script
+                {
                     def response = httpRequest(url: 'http://192.168.1.147:8082/artifactory/api/system/ping')
-                    if (response.status == 200) {
+                    if (response.status == 200)
+                    {
                         echo "Artifactory is reachable! Response status code: ${response.status}"
-                    } else {
+                    } else
+                    {
                         error "Failed to ping Artifactory. Response status code: ${response.status}"
                     }
                 }
             }
         }
-
         stage('Clone Repository') {
             steps {
-                git branch: 'main', url: 'https://github.com/spring-projects/spring-petclinic'
+                git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
             }
         }
-
         stage('External Pom.xml') {
             steps {
                 dir('tmp_git_repo') {
                     // Clone repo in shallow mode
                     checkout([$class: 'GitSCM', branches: [[name: 'sec']],
-                              userRemoteConfigs: [[url: 'https://github.com/mkj2399/pet_pipe']],
-                              extensions: [[$class: 'CloneOption', depth: 1]]])
+                                                  userRemoteConfigs: [[url: 'https://github.com/mkj2399/pet_pipe']],
+                                                  extensions: [[$class: 'CloneOption', depth: 1]]])
                     // Enable sparse checkout
                     sh 'git config core.sparseCheckout true'
                     // Specify the pom.xml file to grab
@@ -51,7 +50,6 @@ pipeline {
                 }
             }
         }
-
         stage('Check Pom.xml') {
             steps {
                 sh '''
@@ -63,7 +61,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Check Pom-sec') {
             steps {
                 sh '''
@@ -75,7 +72,6 @@ pipeline {
                 '''
             }
         }
-
         stage('Compare files') {
             steps {
                 sh '''
@@ -83,10 +79,9 @@ pipeline {
                 ls -la
                 ls -la tmp_git_repo
                 '''
-                // diff pom.xml tmp_git_repo/pom-sec.xml
+                 // diff pom.xml tmp_git_repo/pom-sec.xml
             }
         }
-
         stage('Replace Pom') {
             steps {
                 sh 'pwd' // Print the current working directory
@@ -100,20 +95,18 @@ pipeline {
             steps {
                 sh 'java --version'
                 // package maven and skip test
-                sh "${M2_HOME}/bin/mvn clean package -DskipTests -Dcheckstyle.failsOnError=false"
+                sh '${M2_HOME}/bin/mvn clean package -DskipTests -Dcheckstyle.failsOnError=false'
                 script {
                     JAR_FILE_NAME = sh(returnStdout: true, script: 'ls target/*.jar').trim()
                 }
             }
         }
-
         stage('Test') {
             steps {
                 // Test
-                sh "${M2_HOME}/bin/mvn package test"
+                sh '${M2_HOME}/bin/mvn package test'
             }
         }
-
         stage('Docker Image Build') {
             steps {
                 // Build docker image
@@ -130,11 +123,44 @@ pipeline {
                     }
                     sh 'cp tmp_git_repo/Dockerfile-petclinic-sec Dockerfile'
                     //sh './mvnw spring-boot:build-image'
-                    dockerImage = docker.build("${dockerImage}", "--build-arg=JAR_FILE=${JAR_FILE_NAME} .")
+                    dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", "--build-arg=JAR_FILE=${JAR_FILE_NAME} .")
                 }
             }
         }
+       stage('Publish Build Info to Artifactory') {
+                   steps {
+                       script {
+                           // Prepare Artifactory server and build info objects
+                           def server = Artifactory.server 'myartifactory2'
+                           def buildInfo = Artifactory.newBuildInfo()
 
+                           // Define the Docker image and repository (same as in the Build stage)
+                           def dockerImage = 'my-spring-petclinic-sec:latest'
+                           def dockerRepository = 'docker_repo'
+                           dockerImage = "${artifactoryUrl}/${dockerRepository}/${dockerImage}"
 
+                           // Publish build info and Docker image to Artifactory
+                           def rtDocker = Artifactory.docker server: server
+                           rtDocker.push(dockerImage, dockerRepository, buildInfo)
+                           server.publishBuildInfo buildInfo
+                       }
+                   }
+               }
+
+        stage('Container Scanning') {
+            steps {
+                 script {
+                         def buildInfo = Artifactory.newBuildInfo()
+                         def xrayScanConfig = [
+                            'buildName'      : buildInfo.name,
+                            'buildNumber'    : buildInfo.number,
+                            'context'        : 'my-spring-petclinic-sec', // Provide your context here
+                            'failBuild'      : false
+                         ]
+                 server.xrayScan xrayScanConfig
+
+                 }
+            }
+        }
     }
 }
