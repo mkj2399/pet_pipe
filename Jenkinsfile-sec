@@ -12,8 +12,9 @@ pipeline {
     }
 
     stages {
-        steps
-        {
+        stage('Teste Artifactory') {
+            steps
+            {
                 script
                 {
                     def response = httpRequest(url: 'http://172.168.1.147:8082/artifactory/api/system/ping')
@@ -25,6 +26,7 @@ pipeline {
                         error "Failed to ping Artifactory. Response status code: ${response.status}"
                     }
                 }
+            }
         }
         stage('Clone Repository') {
             steps {
