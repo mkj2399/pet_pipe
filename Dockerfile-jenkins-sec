@@ -37,7 +37,7 @@ COPY config-repo.xml ${JENKINS_HOME}/jobs/petclinic-by-jenkinsfile/config.xml
 
 # add a job on jenkins that execute a pipeline thru jenkinsfile
 RUN mkdir -p ${JENKINS_HOME}/jobs/petclinic-by-jenkinsfile-sec
-COPY config-repo-sec.xml ${JENKINS_HOME}/jobs/petclinic-by-jenkinsfile/config.xml
+COPY config-repo-sec.xml ${JENKINS_HOME}/jobs/petclinic-by-jenkinsfile-sec/config.xml
 
 # install the necessary plugins at Jenkins
 RUN jenkins-plugin-cli --plugins docker-workflow:563.vd5d2e5c4007f
