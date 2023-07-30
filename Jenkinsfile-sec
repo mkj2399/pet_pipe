@@ -59,5 +59,31 @@ pipeline {
                 }
             }
         }
+        stage('Push Docker image to Artifactory') {
+            steps {
+                 script {
+                            def rtDocker = Artifactory.docker server: server
+                            def buildInfo = Artifactory.newBuildInfo()
+                            rtDocker.push('my-spring-petclinic-sec:latest', 'docker_repo', buildInfo)
+                            server.publishBuildInfo buildInfo
+                 }
+            }
+        }
+
+        stage('Container Scanning') {
+            steps {
+                 script {
+                         def buildInfo = Artifactory.newBuildInfo()
+                         def xrayScanConfig = [
+                            'buildName'      : buildInfo.name,
+                            'buildNumber'    : buildInfo.number,
+                            'context'        : 'my-spring-petclinic-sec', // Provide your context here
+                            'failBuild'      : true
+                         ]
+                 server.xrayScan xrayScanConfig
+
+                 }
+            }
+        }
     }
 }
