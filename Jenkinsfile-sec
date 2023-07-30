@@ -9,15 +9,11 @@ pipeline {
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
         JAR_FILE_NAME = ''
     }
-    parameters {
-        string(name: 'USERNAME', defaultValue: 'admin', description: 'username')
-        password(name: 'PASSWORD', defaultValue: 'c1p2f3GH@@', description: 'password')
-    }
     stages {
         stage('Artifactory configuration') {
                     steps {
                         script {
-                            def server = Artifactory.newServer('http://192.168.1.147:8082', params.USERNAME, params.PASSWORD)
+                            def server = Artifactory.newServer(url: 'http://192.168.1.147:8082', credentialsId: 'mayarti')
                         }
                     }
         }
