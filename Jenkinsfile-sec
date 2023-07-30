@@ -23,14 +23,23 @@ pipeline {
                 git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
             }
         }
+        stage('Checkout POM') {
+            steps {
+                sh '''
+                mkdir temp
+                cd temp
+                git init
+                git remote add -f origin https://github.com/mkj2399/pet_pipe
+                git config core.sparseCheckout true
+                echo "pom.xml" >> .git/info/sparse-checkout
+                git pull origin sec
+                mv pom.xml ..
+                cd ..
+                rm -rf temp
+                '''
+            }
+        }
 
-                stage('Prepare POM.XML') {
-                    steps {
-                        sh '''
-                        sed -i 's|<module name="NoHttp"/>|<!-- <module name="NoHttp"/> -->|' /var/lib/docker/volumes/a9db4543857e16b6dfecf7ff7852c7534f51b0524c0794d489572f093c5ddcb0/_data/src/checkstyle/nohttp-checkstyle.xml
-                        '''
-                    }
-                }
 
         stage('Build') {
             steps {
