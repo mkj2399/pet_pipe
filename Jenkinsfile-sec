@@ -12,11 +12,15 @@ pipeline {
     }
 
     stages {
-        stage('Teste Artifactory') {
-                    steps {
-                        http://172.168.1.147:8082/artifactory/api/system/ping
-
+        steps {
+                script {
+                    def response = httpRequest(url: 'http://172.168.1.147:8082/artifactory/api/system/ping')
+                    if (response.status == 200) {
+                        echo "Artifactory is reachable! Response status code: ${response.status}"
+                    } else {
+                        error "Failed to ping Artifactory. Response status code: ${response.status}"
                     }
+                }
         }
         stage('Clone Repository') {
             steps {
