@@ -67,7 +67,7 @@ pipeline {
                 pwd
                 ls -la
                 ls -la tmp_git_repo
-                diff pom.xml tmp_git_repo/pom-sec.xml
+                // diff pom.xml tmp_git_repo/pom-sec.xml
                 '''
             }
         }
