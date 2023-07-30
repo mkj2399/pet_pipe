@@ -20,7 +20,7 @@
       <submoduleCfg class="empty-list"/>
       <extensions/>
     </scm>
-    <scriptPath>Jenkinsfile</scriptPath>
+    <scriptPath>Jenkinsfile-sec</scriptPath>
     <lightweight>true</lightweight>
   </definition>
   <triggers/>
