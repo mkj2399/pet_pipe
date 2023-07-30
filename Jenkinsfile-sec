@@ -135,32 +135,6 @@ pipeline {
             }
         }
 
-        stage('Push to Artifactory') {
-                    steps {
-                        script {
-                            // Add Docker image to build info
-                            sh "jfrog rt docker-push ${DOCKER_FULL_NAME} my-docker-repo --build-name=my-build-name --build-number=${BUILD_NUMBER}"
-                            // Collect environment variables
-                            sh "jfrog rt build-collect-env my-build-name ${BUILD_NUMBER}"
-                            // Publish the build info
-                            sh "jfrog rt build-publish my-build-name ${BUILD_NUMBER}"
-                        }
-                    }
-        }
 
-        stage('Container Scanning') {
-            steps {
-                script {
-                    def buildInfo = Artifactory.newBuildInfo()
-                    def xrayScanConfig = [
-                        'buildName'   : buildInfo.name,
-                        'buildNumber' : buildInfo.number,
-                        'context'     : 'my-spring-petclinic-sec', // Provide your context here
-                        'failBuild'   : false
-                    ]
-                    server.xrayScan xrayScanConfig
-                }
-            }
-        }
     }
 }
