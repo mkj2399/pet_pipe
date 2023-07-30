@@ -33,7 +33,7 @@ pipeline {
                     // Enable sparse checkout
                     sh 'git config core.sparseCheckout true'
                     // Specify the pom.xml file to grab
-                    sh 'echo "pom.xml" >> .git/info/sparse-checkout'
+                    sh 'echo "pom-sec.xml" >> .git/info/sparse-checkout'
                     // Perform git checkout
                     sh 'git read-tree -mu HEAD'
                 }
@@ -42,7 +42,7 @@ pipeline {
 
         stage('Replace Pom.xml') {
             steps {
-                   sh 'cp pom.xml ../'
+                   sh 'cp pom-sec.xml ../pom.xml'
             }
         }
 
