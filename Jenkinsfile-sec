@@ -69,13 +69,14 @@ pipeline {
                 pwd
                 ls -la
                 ls -la tmp_git_repo
-                diff --git pom.xml tmp_git_repo/pom-sec.xml
+                diff pom.xml tmp_git_repo/pom-sec.xml
                 '''
             }
         }
         stage('Replace Pom.xml') {
             steps {
                    sh 'cp tmp_git_repo/pom-sec.xml ../pom.xml'
+                   ls -la
             }
         }
 
