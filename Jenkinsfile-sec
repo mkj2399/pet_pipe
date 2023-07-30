@@ -24,11 +24,19 @@ pipeline {
             }
         }
 
+                stage('Prepare POM.XML') {
+                    steps {
+                        sh '''
+                        sed -i 's|<module name="NoHttp"/>|<!-- <module name="NoHttp"/> -->|' jenkins/var/src/checkstyle/nohttp-checkstyle.xml
+                        '''
+                    }
+                }
+
         stage('Build') {
             steps {
                 sh 'java --version'
                 // package maven and skip test
-                sh '${M2_HOME}/bin/mvn clean package -DskipTests -Dcheckstyle.skip'
+                sh '${M2_HOME}/bin/mvn clean package -DskipTests -Dcheckstyle.failsOnError=false'
                 script {
                     JAR_FILE_NAME = sh(returnStdout: true, script: 'ls target/*.jar').trim()
                 }
