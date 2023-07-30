@@ -2,7 +2,7 @@ pipeline {
     agent any
     
     environment {
-        // Defina o caminho do diretório de instalação do JDK que você deseja usar
+        // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
         DOCKER_IMAGE_NAME = "petclinic-pipeline-file"
         DOCKER_IMAGE_TAG = "latest"
@@ -19,7 +19,7 @@ pipeline {
         stage('Build') {
             steps {
                 sh 'java --version'
-                // Comandos para compilar o código ou construir a imagem Docker, por exemplo:
+                // package maven and skip test
                 sh '${M2_HOME}/bin/mvn clean package -DskipTests'
                 script {
                     JAR_FILE_NAME = sh(returnStdout: true, script: 'ls target/*.jar').trim()
@@ -28,22 +28,22 @@ pipeline {
         }
         stage('Test') {
             steps {
-                // Comandos para executar testes automatizados
+                // Test
                 sh '${M2_HOME}/bin/mvn package test'
             }
         }
         stage('Docker Image Build') {
             steps {
-                // Crie a imagem Docker utilizando o Dockerfile do seu projeto
+                // Build docker image
                 script {
                     dir('tmp_git_repo') {
-                        // Clone do repositório com o modo shallow para economizar tempo e recursos
+                        // clone repo on shallow mode
                         git branch: 'main', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
-                        // Ativar o recurso sparse-checkout
+                        // Grab a specific file
                         sh 'git config core.sparseCheckout true'
-                        // Criar o arquivo .git/info/sparse-checkout contendo o caminho do arquivo específico que você deseja clonar
+                        // grabbin dockerfile
                         sh 'echo "Dockerfile-petclinic" >> .git/info/sparse-checkout'
-                        // Fazer o checkout novamente para aplicar o sparse-checkout
+                        // git checkout
                         sh 'git read-tree -mu HEAD'
                     }
                     sh 'cp tmp_git_repo/Dockerfile-petclinic Dockerfile'
