@@ -13,7 +13,7 @@ pipeline {
         stage('Artifactory configuration') {
                     steps {
                         script {
-                            def server = Artifactory.newServer(url: 'http://192.168.1.147:8082', credentialsId: 'mayarti')
+                            def server = Artifactory.newServer(url: 'http://192.168.1.147:8082', credentialsId: 'mayarti2')
                         }
                     }
         }
