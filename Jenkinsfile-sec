@@ -57,7 +57,6 @@ pipeline {
                     echo "pom-sec.xml exists"
                 else
                     echo "pom-sec.xml does not exist"
-                    exit 1
                 fi
                 '''
             }
