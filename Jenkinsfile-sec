@@ -76,7 +76,7 @@ pipeline {
         stage('Replace Pom.xml') {
             steps {
                    sh 'cp tmp_git_repo/pom-sec.xml ../pom.xml'
-                   ls -la
+                   sh 'ls -la'
             }
         }
 
