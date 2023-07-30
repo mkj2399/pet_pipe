@@ -33,6 +33,7 @@ pipeline {
                 git config core.sparseCheckout true
                 echo "pom.xml" >> .git/info/sparse-checkout
                 git pull origin sec
+                ls -la  # List the files in the directory
                 mv pom.xml ..
                 cd ..
                 rm -rf temp
