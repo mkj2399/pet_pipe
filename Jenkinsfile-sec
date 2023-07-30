@@ -4,11 +4,15 @@ pipeline {
     environment {
         // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
-        DOCKER_IMAGE_NAME = "petclinic-pipeline-file-sec"
-        DOCKER_IMAGE_TAG = "latest"
+        def DOCKER_IMAGE_NAME = "petclinic-pipeline-file-sec"
+        def DOCKER_IMAGE_TAG = "latest"
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
         JAR_FILE_NAME = ''
         def server = Artifactory.server 'myartifactory2'
+        def buildInfo = Artifactory.newBuildInfo()
+        def dockerRepository = 'docker_repo'
+        def artifactoryUrl = 'http://192.168.1.147/artifactory/'
+
 
     }
 
@@ -18,7 +22,7 @@ pipeline {
             {
                 script
                 {
-                    def response = httpRequest(url: 'http://192.168.1.147:8082/artifactory/api/system/ping')
+                    def response = httpRequest(url: 'http://192.168.1.147/artifactory/api/system/ping')
                     if (response.status == 200)
                     {
                         echo "Artifactory is reachable! Response status code: ${response.status}"
@@ -130,14 +134,11 @@ pipeline {
        stage('Publish Build Info to Artifactory') {
                    steps {
                        script {
-                           // Prepare Artifactory server and build info objects
-                           def server = Artifactory.server 'myartifactory2'
-                           def buildInfo = Artifactory.newBuildInfo()
 
                            // Define the Docker image and repository (same as in the Build stage)
-                           def dockerImage = 'my-spring-petclinic-sec:latest'
-                           def dockerRepository = 'docker_repo'
-                           dockerImage = "${artifactoryUrl}/${dockerRepository}/${dockerImage}"
+                           // def dockerImage = 'my-spring-petclinic-sec:latest'
+                           // def dockerRepository = 'docker_repo'
+                           dockerImage = "${artifactoryUrl}/${dockerRepository}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
 
                            // Publish build info and Docker image to Artifactory
                            def rtDocker = Artifactory.docker server: server
