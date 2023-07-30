@@ -27,12 +27,13 @@ pipeline {
             steps {
                 dir('tmp_git_repo') {
                     // Clone repo in shallow mode
-                    git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
+                    checkout([$class: 'GitSCM', branches: [[name: 'sec']],
+                                                  userRemoteConfigs: [[url: 'https://github.com/mkj2399/pet_pipe']],
+                                                  extensions: [[$class: 'CloneOption', depth: 1]]])
                     // Enable sparse checkout
                     sh 'git config core.sparseCheckout true'
                     // Specify the pom.xml file to grab
                     sh 'echo "pom.xml" >> .git/info/sparse-checkout'
-                    sh 'echo "Dockerfile-petclinic" >> .git/info/sparse-checkout'
                     // Perform git checkout
                     sh 'git read-tree -mu HEAD'
                 }
@@ -42,6 +43,7 @@ pipeline {
         stage('Replace Pom.xml') {
             steps {
                    sh 'cp tmp_git_repo/pom.xml pom.xml'
+                   sh 'ls -la'
             }
         }
 
@@ -65,6 +67,16 @@ pipeline {
             steps {
                 // Build docker image
                 script {
+                    dir('tmp_git_repo') {
+                        // clone repo on shallow mode
+                        git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
+                        // Grab a specific file
+                        sh 'git config core.sparseCheckout true'
+                        // grabbin dockerfile
+                        sh 'echo "Dockerfile-petclinic" >> .git/info/sparse-checkout'
+                        // git checkout
+                        sh 'git read-tree -mu HEAD'
+                    }
                     sh 'cp tmp_git_repo/Dockerfile-petclinic-sec Dockerfile'
                     //sh './mvnw spring-boot:build-image'
                     dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", "--build-arg=JAR_FILE=${JAR_FILE_NAME} .")
