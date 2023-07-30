@@ -12,7 +12,12 @@ pipeline {
     }
 
     stages {
+        stage('Teste Artifactory') {
+                    steps {
+                        http://172.168.1.147:8082/artifactory/api/system/ping
 
+                    }
+        }
         stage('Clone Repository') {
             steps {
                 git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
