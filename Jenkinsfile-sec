@@ -75,7 +75,7 @@ pipeline {
             steps {
                 sh 'pwd' // Print the current working directory
                 sh 'rm pom.xml'
-                sh 'cp tmp_git_repo/pom-sec.xml ../pom.xml'
+                sh 'cp tmp_git_repo/pom-sec.xml pom.xml'
                 sh 'ls -la'
             }
         }
