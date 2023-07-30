@@ -26,8 +26,8 @@ pipeline {
         stage('Checkout POM') {
             steps {
                 sh '''
-                mkdir temp
-                cd temp
+                mkdir temp_pom
+                cd temp_pom
                 git init
                 git remote add -f origin https://github.com/mkj2399/pet_pipe
                 git config core.sparseCheckout true
@@ -36,7 +36,7 @@ pipeline {
                 ls -la  # List the files in the directory
                 mv pom.xml ..
                 cd ..
-                rm -rf temp
+                rm -rf temp_pom
                 '''
             }
         }
