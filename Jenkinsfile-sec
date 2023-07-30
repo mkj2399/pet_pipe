@@ -47,7 +47,7 @@ pipeline {
                 script {
                     dir('tmp_git_repo') {
                         // clone repo on shallow mode
-                        git branch: 'main', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
+                        git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
                         // Grab a specific file
                         sh 'git config core.sparseCheckout true'
                         // grabbin dockerfile
