@@ -27,7 +27,7 @@ pipeline {
                 stage('Prepare POM.XML') {
                     steps {
                         sh '''
-                        sed -i 's|<module name="NoHttp"/>|<!-- <module name="NoHttp"/> -->|' jenkins/var/src/checkstyle/nohttp-checkstyle.xml
+                        sed -i 's|<module name="NoHttp"/>|<!-- <module name="NoHttp"/> -->|' var/jenkins_home/src/checkstyle/nohttp-checkstyle.xml
                         '''
                     }
                 }
