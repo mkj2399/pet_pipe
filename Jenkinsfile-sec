@@ -39,7 +39,18 @@ pipeline {
                 }
             }
         }
-
+        stage('Check Pom-sec.xml') {
+            steps {
+                sh '''
+                if [ -f tmp_git_repo/pom-sec.xml ]; then
+                    echo "pom-sec.xml exists"
+                else
+                    echo "pom-sec.xml does not exist"
+                    exit 1
+                fi
+                '''
+            }
+        }
         stage('Replace Pom.xml') {
             steps {
                    sh 'cp pom-sec.xml ../pom.xml'
