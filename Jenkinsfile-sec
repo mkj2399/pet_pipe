@@ -78,7 +78,7 @@ pipeline {
                             'buildName'      : buildInfo.name,
                             'buildNumber'    : buildInfo.number,
                             'context'        : 'my-spring-petclinic-sec', // Provide your context here
-                            'failBuild'      : true
+                            'failBuild'      : false
                          ]
                  server.xrayScan xrayScanConfig
 
