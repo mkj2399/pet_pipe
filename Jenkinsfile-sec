@@ -135,18 +135,17 @@ pipeline {
             }
         }
 
-        stage('Publish Build Info to Artifactory') {
-            steps {
-                script {
-                    // Prepare Artifactory server and build info objects
-                    def buildInfo = Artifactory.newBuildInfo()
-
-                    // Publish build info and Docker image to Artifactory
-                    def rtDocker = Artifactory.docker server: server
-                    rtDocker.push(dockerImage, dockerRepository, buildInfo)
-                    server.publishBuildInfo buildInfo
-                }
-            }
+        stage('Push to Artifactory') {
+                    steps {
+                        script {
+                            // Add Docker image to build info
+                            sh "jfrog rt docker-push ${DOCKER_FULL_NAME} my-docker-repo --build-name=my-build-name --build-number=${BUILD_NUMBER}"
+                            // Collect environment variables
+                            sh "jfrog rt build-collect-env my-build-name ${BUILD_NUMBER}"
+                            // Publish the build info
+                            sh "jfrog rt build-publish my-build-name ${BUILD_NUMBER}"
+                        }
+                    }
         }
 
         stage('Container Scanning') {
