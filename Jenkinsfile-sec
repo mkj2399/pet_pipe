@@ -9,6 +9,8 @@ pipeline {
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
         JAR_FILE_NAME = ''
     }
+    sh 'mvn clean install -U'
+    sh 'mvn dependency:purge-local-repository'
     stages {
         stage('Artifactory configuration') {
                     steps {
