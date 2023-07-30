@@ -25,7 +25,7 @@ RUN chmod 777 ${JENKINS_HOME}/maven/apache-maven-3.9.3-bin.tar.gz
 RUN tar xzvf ${JENKINS_HOME}/maven/apache-maven-3.9.3-bin.tar.gz -C ${JENKINS_HOME}/maven/
 
 # settings.xml that points to Jcenter
-COPY settings.xml ${JENKINS_HOME}/maven/apache-maven-3.9.3/conf/settings.xml
+COPY settings.xml ${JENKINS_HOME}/maven/apache-maven-3.9.3/conf/settings-sec.xml
 
 # add a job on jenkins that execute a pipeline thru script from pipeline job
 RUN mkdir -p ${JENKINS_HOME}/jobs/petclinic-by-script
