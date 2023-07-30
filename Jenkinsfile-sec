@@ -42,7 +42,7 @@ pipeline {
 
         stage('Replace Pom.xml') {
             steps {
-                sh 'mv tmp_git_repo/pom.xml .'
+                   sh 'cp tmp_git_repo/pom.xml ${WORKSPACE}/'
             }
         }
 
