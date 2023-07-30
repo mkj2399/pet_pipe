@@ -11,6 +11,15 @@ pipeline {
     }
 
     stages {
+        stages {
+                stage('Artifactory configuration') {
+                    steps {
+                        script {
+                            withCredentials([usernamePassword(credentialsId: 'artifactory-credentials', passwordVariable: 'c1p2f3GH@@', usernameVariable: 'admin')]) {
+                                def server = Artifactory.newServer('http://192.168.1.147:8082', 'artifactory-credentials')
+                                    }
+                                }
+                           }
         stage('Clone Repository') {
             steps {
                 git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
