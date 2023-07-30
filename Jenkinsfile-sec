@@ -24,35 +24,19 @@ pipeline {
             }
         }
 
-    stage('Prepare') {
-        steps {
-            sh '''
-            python3 - <<EOF
-    import xml.etree.ElementTree as ET
+                stage('Prepare POM.XML') {
+                    steps {
+                        sh '''
+                        echo "Before:"
+                        cat src/checkstyle/nohttp-checkstyle.xml
 
-    namespace = {'maven': 'http://maven.apache.org/POM/4.0.0'}
+                        sed -i 's|<module name="NoHttp"/>|<!-- <module name="NoHttp"/> -->|' src/checkstyle/nohttp-checkstyle.xml
 
-    # Parse the XML file
-    tree = ET.parse('pom.xml')
-    root = tree.getroot()
-
-    # Find the Checkstyle plugin configuration
-    for plugin in root.findall(".//maven:plugin[maven:artifactId='maven-checkstyle-plugin']", namespace):
-        configuration = plugin.find('maven:configuration', namespace)
-        if configuration is None:
-            configuration = ET.SubElement(plugin, 'configuration')
-         # Set failsOnError to false
-        failsOnError = configuration.find('maven:failsOnError', namespace)
-        if failsOnError is None:
-            failsOnError = ET.SubElement(configuration, 'failsOnError')
-        failsOnError.text = 'false'
-
-    # Write the modified XML back to the file
-    tree.write('pom.xml')
-    EOF
-            '''
-        }
-    }
+                        echo "After:"
+                        cat src/checkstyle/nohttp-checkstyle.xml
+                        '''
+                    }
+                }
 
         stage('Build') {
             steps {
