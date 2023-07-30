@@ -27,7 +27,7 @@ pipeline {
             steps {
                 dir('tmp_git_repo') {
                     // Clone repo in shallow mode
-                    git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
+                    git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true, depth: 1
                     // Enable sparse checkout
                     sh 'git config core.sparseCheckout true'
                     // Specify the pom.xml file to grab
