@@ -27,7 +27,9 @@ pipeline {
             steps {
                 dir('tmp_git_repo') {
                     // Clone repo in shallow mode
-                    git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true, depth: 1
+                    checkout([$class: 'GitSCM', branches: [[name: 'sec']],
+                                                  userRemoteConfigs: [[url: 'https://github.com/mkj2399/pet_pipe']],
+                                                  extensions: [[$class: 'CloneOption', depth: 1]]])
                     // Enable sparse checkout
                     sh 'git config core.sparseCheckout true'
                     // Specify the pom.xml file to grab
@@ -40,7 +42,7 @@ pipeline {
 
         stage('Replace Pom.xml') {
             steps {
-                sh 'mv tmp_git_repo/pom.xml .'
+                sh 'cp tmp_git_repo/pom.xml pom.xml'
             }
         }
 
