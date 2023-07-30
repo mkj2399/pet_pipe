@@ -23,21 +23,26 @@ pipeline {
                 git branch:'main', url: 'https://github.com/spring-projects/spring-petclinic'
             }
         }
-        stage('Clone and Build Maven Project') {
+        stage('External Pom.xml') {
             steps {
                 dir('tmp_git_repo') {
-                // Clone repo in shallow mode
-                git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
-                // Enable sparse checkout
-                sh 'git config core.sparseCheckout true'
-                // Specify the pom.xml file to grab
-                 sh 'echo "pom.xml" > .git/info/sparse-checkout'
-                 // Perform git checkout
-                 sh 'git read-tree -mu HEAD'
-                 }
+                    // Clone repo in shallow mode
+                    git branch: 'sec', url: 'https://github.com/mkj2399/pet_pipe', shallow: true
+                    // Enable sparse checkout
+                    sh 'git config core.sparseCheckout true'
+                    // Specify the pom.xml file to grab
+                    sh 'echo "pom.xml" > .git/info/sparse-checkout'
+                    // Perform git checkout
+                    sh 'git read-tree -mu HEAD'
+                }
             }
         }
 
+        stage('Replace Pom.xml') {
+            steps {
+                sh 'mv tmp_git_repo/pom.xml .'
+            }
+        }
 
         stage('Build') {
             steps {
