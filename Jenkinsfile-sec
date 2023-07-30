@@ -10,15 +10,14 @@ pipeline {
         JAR_FILE_NAME = ''
     }
     parameters {
-        string(name: 'USERNAME', defaultValue: 'defaultUser', description: 'admin')
-        password(name: 'PASSWORD', defaultValue: 'defaultPass', description: 'c1p2f3GH@@')
+        string(name: 'USERNAME', defaultValue: 'admin', description: 'username')
+        password(name: 'PASSWORD', defaultValue: 'c1p2f3GH@@', description: 'password')
     }
     stages {
         stage('Artifactory configuration') {
                     steps {
                         script {
                             def server = Artifactory.newServer('http://192.168.1.147:8082', params.USERNAME, params.PASSWORD)
-
                         }
                     }
         }
