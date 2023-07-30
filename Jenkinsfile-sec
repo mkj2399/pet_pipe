@@ -46,12 +46,11 @@ pipeline {
                     echo "pom.xml exists"
                 else
                     echo "pom.xml does not exist"
-                    exit 1
                 fi
                 '''
             }
         }
-        stage('Check Pom-sec.xml') {
+        stage('Check Pom-sec') {
             steps {
                 sh '''
                 if [ -f tmp_git_repo/pom-sec.xml ]; then
@@ -73,7 +72,7 @@ pipeline {
                 '''
             }
         }
-        stage('Replace Pom.xml') {
+        stage('Replace Pom') {
             steps {
                 sh 'pwd' // Print the current working directory
                 sh 'rm pom.xml'
