@@ -17,7 +17,7 @@ pipeline {
             {
                 script
                 {
-                    def response = httpRequest(url: 'http://172.168.1.147:8082/artifactory/api/system/ping')
+                    def response = httpRequest(url: 'http://192.168.1.147:8082/artifactory/api/system/ping')
                     if (response.status == 200)
                     {
                         echo "Artifactory is reachable! Response status code: ${response.status}"
