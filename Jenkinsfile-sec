@@ -4,7 +4,7 @@ pipeline {
     environment {
         // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
-        DOCKER_IMAGE_NAME = "petclinic-pipeline-file"
+        DOCKER_IMAGE_NAME = "petclinic-pipeline-file-sec"
         DOCKER_IMAGE_TAG = "latest"
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
         JAR_FILE_NAME = ''
@@ -46,7 +46,7 @@ pipeline {
                         // git checkout
                         sh 'git read-tree -mu HEAD'
                     }
-                    sh 'cp tmp_git_repo/Dockerfile-petclinic Dockerfile'
+                    sh 'cp tmp_git_repo/Dockerfile-petclinic-sec Dockerfile'
                     //sh './mvnw spring-boot:build-image'
                     dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", "--build-arg=JAR_FILE=${JAR_FILE_NAME} .")
                 }
