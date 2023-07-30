@@ -9,7 +9,7 @@ pipeline {
         def DOCKER_IMAGE_NAME = 'my-spring-petclinic-sec'
         def DOCKER_IMAGE_TAG = 'latest'
         def JAR_FILE_NAME = ''
-        def dockerImage = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        def dockerImage = ''
         def dockerRepository = 'docker_repo'
         def artifactoryUrl = 'https://192.168.1.147:8082/artifactory' // Replace with your Artifactory URL
         dockerImage = "${artifactoryUrl}/${dockerRepository}/${dockerImage}"
