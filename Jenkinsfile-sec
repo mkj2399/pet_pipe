@@ -4,11 +4,14 @@ pipeline {
     environment {
         // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
-        DOCKER_IMAGE_NAME = "petclinic-pipeline-file-sec"
-        DOCKER_IMAGE_TAG = "latest"
         M2_HOME = "/var/jenkins_home/maven/apache-maven-3.9.3"
-        JAR_FILE_NAME = ''
         def server = Artifactory.server 'myartifactory2'
+        def DOCKER_IMAGE_NAME = 'my-spring-petclinic-sec'
+        def DOCKER_IMAGE_TAG = 'latest'
+        def JAR_FILE_NAME = ''
+        def dockerImage = "${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+        def dockerRepository = 'docker_repo'
+        dockerImage = "${artifactoryUrl}/${dockerRepository}/${dockerImage}"
     }
 
     stages {
