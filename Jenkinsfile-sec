@@ -12,7 +12,8 @@ pipeline {
         def buildInfo = Artifactory.newBuildInfo()
         def dockerRepository = 'docker_repo'
         def artifactoryUrl = 'http://192.168.1.147/artifactory/'
-
+        TESTCONTAINERS_REUSE_ENABLE = 'true'
+        TESTCONTAINERS_REUSE_NETWORK = '127.0.0.1'
 
     }
 
@@ -107,8 +108,12 @@ pipeline {
         }
         stage('Test') {
             steps {
+                sh "echo 'TESTCONTAINERS_REUSE_ENABLE=${env.TESTCONTAINERS_REUSE_ENABLE}' >> /tmp/testcontainers.properties"
+                sh "echo 'TESTCONTAINERS_REUSE_NETWORK=${env.TESTCONTAINERS_REUSE_NETWORK}' >> /tmp/testcontainers.properties"
+
+
                 // Test
-                sh '${M2_HOME}/bin/mvn package test'
+                sh '${M2_HOME}/bin/mvn package test -Dtestcontainers.properties=/tmp/testcontainers.properties'
             }
         }
         stage('Docker Image Build') {
@@ -140,8 +145,12 @@ pipeline {
                            // def dockerRepository = 'docker_repo'
                            dockerImage = "${artifactoryUrl}/${dockerRepository}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
 
+
                            // Publish build info and Docker image to Artifactory
                            def rtDocker = Artifactory.docker server: server
+                           echo "Docker Image: ${dockerImage}" // This will print the Docker image value in the Jenkins console output
+                           echo "Docker server: ${rtDocker}" //
+                           echo "BuildInfo: ${buildInfo}" //
                            rtDocker.push(dockerImage, dockerRepository, buildInfo)
                            server.publishBuildInfo buildInfo
                        }
