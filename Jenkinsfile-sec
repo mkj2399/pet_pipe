@@ -140,7 +140,7 @@ pipeline {
             }
         }
 
-        stage('Load and Scanning Container') {
+        stage('Load and Scan Container') {
             steps {
                  script {
                          sh 'docker-compose -f docker-compose-mysql.yml up -d'
