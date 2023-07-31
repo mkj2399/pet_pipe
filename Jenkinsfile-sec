@@ -106,6 +106,8 @@ pipeline {
                 script {
                     JAR_FILE_NAME = sh(returnStdout: true, script: 'ls target/*.jar').trim()
                 }
+                sh 'jf rt u target/*.jar myartifactory2/dep-release-local/petclinic/${env.BUILD_NUMBER}/'
+                sh 'jf rt u --build-name=petclinic --build-number=${env.BUILD_NUMBER} target/*.jar'
             }
         }
         stage('Test') {
