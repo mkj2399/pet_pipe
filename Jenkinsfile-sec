@@ -126,10 +126,14 @@ pipeline {
                         sh 'git config core.sparseCheckout true'
                         // grabbin dockerfile
                         sh 'echo "Dockerfile-petclinic" >> .git/info/sparse-checkout'
+                        sh 'echo "docker-compose-mysql.yml" >> .git/info/sparse-checkout'
+                        sh 'echo "docker-compose-file-sec.yml" >> .git/info/sparse-checkout'
                         // git checkout
                         sh 'git read-tree -mu HEAD'
                     }
                     sh 'cp tmp_git_repo/Dockerfile-petclinic-sec Dockerfile'
+                    sh 'cp tmp_git_repo/docker-compose-mysql.yml docker-compose-mysql.yml'
+                    sh 'cp tmp_git_repo/docker-compose-file-sec.yml docker-compose-file-sec.yml'
                     //sh './mvnw spring-boot:build-image'
                     dockerImage = docker.build("${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}", "--build-arg=JAR_FILE=${JAR_FILE_NAME} .")
                 }
@@ -142,7 +146,7 @@ pipeline {
                          sh 'docker-compose -f docker-compose-mysql.yml up -d'
                          sh 'jf docker scan mysql:8.0'
                          sleep(40)
-                         sh 'docker-compose -f docker-compose-file.yml up -d'
+                         sh 'docker-compose -f docker-compose-file-sec.yml up -d'
                          sh 'jf docker scan petclinic-pipeline-file-sec:latest'
 
                  }
