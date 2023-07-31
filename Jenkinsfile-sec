@@ -146,6 +146,7 @@ pipeline {
         stage('Load and Scan Container') {
             steps {
                  script {
+                         jf c add
                          sh 'docker-compose -f docker-compose-mysql.yml up -d'
                          jf docker scan 'mysql:8.0'
                          sleep(40)
