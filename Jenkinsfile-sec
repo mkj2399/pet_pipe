@@ -12,8 +12,6 @@ pipeline {
         def buildInfo = Artifactory.newBuildInfo()
         def dockerRepository = 'docker_repo'
         def artifactoryUrl = 'http://192.168.1.147/artifactory/'
-        // TESTCONTAINERS_REUSE_ENABLE = 'true'
-        // TESTCONTAINERS_REUSE_NETWORK = '127.0.0.1'
         DOCKER_HOST = 'tcp://host.docker.internal:2375'
 
     }
@@ -137,38 +135,15 @@ pipeline {
                 }
             }
         }
-       stage('Publish Build Info to Artifactory') {
-                   steps {
-                       script {
 
-                           // Define the Docker image and repository (same as in the Build stage)
-                           // def dockerImage = 'my-spring-petclinic-sec:latest'
-                           // def dockerRepository = 'docker_repo'
-                           dockerImage = "${artifactoryUrl}/${dockerRepository}/${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
-
-
-                           // Publish build info and Docker image to Artifactory
-                           def rtDocker = Artifactory.docker server: server
-                           echo "Docker Image: ${dockerImage}" // This will print the Docker image value in the Jenkins console output
-                           echo "Docker server: ${rtDocker}" //
-                           echo "BuildInfo: ${buildInfo}" //
-                           rtDocker.push(dockerImage, dockerRepository, buildInfo)
-                           server.publishBuildInfo buildInfo
-                       }
-                   }
-               }
-
-        stage('Container Scanning') {
+        stage('Load and Scanning Container') {
             steps {
                  script {
-                         def buildInfo = Artifactory.newBuildInfo()
-                         def xrayScanConfig = [
-                            'buildName'      : buildInfo.name,
-                            'buildNumber'    : buildInfo.number,
-                            'context'        : 'my-spring-petclinic-sec', // Provide your context here
-                            'failBuild'      : false
-                         ]
-                 server.xrayScan xrayScanConfig
+                         sh 'docker-compose -f docker-compose-mysql.yml up -d'
+                         sh 'jf docker scan mysql:8.0'
+                         sleep(40)
+                         sh 'docker-compose -f docker-compose-file.yml up -d'
+                         sh 'jf docker scan petclinic-pipeline-file-sec:latest'
 
                  }
             }
