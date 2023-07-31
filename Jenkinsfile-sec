@@ -147,10 +147,10 @@ pipeline {
             steps {
                  script {
                          sh 'docker-compose -f docker-compose-mysql.yml up -d'
-                         sh 'jf docker scan mysql:8.0'
+                         jf docker scan mysql:8.0
                          sleep(40)
                          sh 'docker-compose -f docker-compose-file-sec.yml up -d'
-                         sh 'jf docker scan petclinic-pipeline-file-sec:latest'
+                         jf docker scan petclinic-pipeline-file-sec:latest
 
                  }
             }
