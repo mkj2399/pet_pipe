@@ -24,6 +24,12 @@ RUN chown -R jenkins ${JENKINS_HOME}/maven/apache-maven-3.9.3-bin.tar.gz
 RUN chmod 777 ${JENKINS_HOME}/maven/apache-maven-3.9.3-bin.tar.gz
 RUN tar xzvf ${JENKINS_HOME}/maven/apache-maven-3.9.3-bin.tar.gz -C ${JENKINS_HOME}/maven/
 
+# Copy docker compose and make available to be used by jenkins
+RUN curl -o /usr/local/bin/docker-compose -SL https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-linux-x86_64
+RUN chown -R jenkins /usr/local/bin/docker-compose
+RUN chmod x+ /usr/local/bin/docker-compose
+
+
 # settings.xml that points to Jcenter
 COPY settings-sec.xml ${JENKINS_HOME}/maven/apache-maven-3.9.3/conf/settings.xml
 
