@@ -1,6 +1,8 @@
 pipeline {
     agent any
-    
+    tools {
+                jfrog 'jfrog-cli'
+    }
     environment {
         // JDK installation path
         JAVA_HOME = '/var/jenkins_home/java/jdk-17'
@@ -15,9 +17,7 @@ pipeline {
         DOCKER_HOST = 'tcp://host.docker.internal:2375'
 
     }
-    tools {
-            jfrog 'jfrog-cli'
-        }
+
 
     stages {
         stage('Teste Artifactory') {
@@ -149,7 +149,7 @@ pipeline {
                          sh 'docker-compose -f docker-compose-mysql.yml up -d'
                          sleep(40)
                          sh 'docker-compose -f docker-compose-file-sec.yml up -d'
-                         jf rt ping
+                         jf 'rt ping'
                          jf 'docker scan mysql:8.0'
                          jf 'docker scan petclinic-pipeline-file-sec:latest'
 
