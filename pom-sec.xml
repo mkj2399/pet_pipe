@@ -448,5 +448,16 @@
       </build>
     </profile>
   </profiles>
-
+  <distributionManagement>
+    <repository>
+      <id>central</id>
+      <name>libs-release-local</name>
+      <url>http://192.168.1.147/ui/native/dep-release-local</url>
+    </repository>
+    <snapshotRepository>
+      <id>snapshots</id>
+      <name>libs-snapshot-local</name>
+      <url>http://192.168.1.147/ui/native/dep-snapshot-local</url>
+    </snapshotRepository>
+  </distributionManagement>
 </project>
